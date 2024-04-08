@@ -1,29 +1,109 @@
 # Create T3 App
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+## 初始化
 
-## What's next? How do I make an app with this?
+### 创建
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
+```bash
+pnpm create t3-app@latest
+```
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+### 配置
 
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Drizzle](https://orm.drizzle.team)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
+- What will your project be called? t3-demo
+- Will you be using TypeScript or JavaScript? TypeScript
+- Will you be using Tailwind CSS for styling? Yes
+- Would you like to use tRPC? Yes
+- What authentication provider would you like to use? None
+- What database ORM would you like to use? Prisma
+- EXPERIMENTAL Would you like to use Next.js App Router? No
+- What database provider would you like to use? SQLite
+- Should we initialize a Git repository and stage the changes? No
+- Should we run 'pnpm install' for you? No
+- What import alias would you like to use? ~/
 
-## Learn More
+### 运行
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
+```bash
+cd t3-demo
+pnpm install
+pnpm db:push
+pnpm dev
+```
 
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
+### 数据库
 
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
+- 查看数据库
 
-## How do I deploy this?
+```bash
+npx prisma studio
+```
 
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+- 更新数据库
+
+```bash
+npx prisma db push
+```
+
+## 添加 clerk
+
+### 安装
+
+```bash
+pnpm add @clerk/nextjs
+```
+
+### 添加上下文
+
+在 \_app.tsx 中添加 \<ClerkProvider\>组件
+
+```tsx
+import { ClerkProvider } from "@clerk/nextjs";
+import type { AppProps } from "next/app";
+
+function MyApp({ Component, pageProps }: AppProps) {
+  return (
+    <ClerkProvider {...pageProps}>
+      <Component {...pageProps} />
+    </ClerkProvider>
+  );
+}
+
+export default MyApp;
+```
+
+### 登录
+
+- 登录组件
+
+```tsx
+import { SignIn } from "@clerk/nextjs";
+
+const SignInPage = () => (
+  <SignIn path="/sign-in" routing="path" signUpUrl="/sign-up" />
+);
+
+export default SignInPage;
+```
+
+![sign in](/public/readme/signin.png)
+
+### 获取用户信息
+
+- 登出组件 SignInButton
+- 用户组件 UserButton
+
+```tsx
+import { SignIn } from "@clerk/nextjs";
+import { SignInButton, useUser, UserButton } from "@clerk/nextjs";
+
+const SignInPage = () => (
+  <SignIn path="/sign-in" routing="path" signUpUrl="/sign-up" />
+);
+
+export default function () {
+  const user = useUser();
+
+  return !user.isSignedIn ? <SignInButton /> : <UserButton />;
+}
+```
