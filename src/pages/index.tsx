@@ -9,9 +9,9 @@ export default function Home() {
   const list = api.item.list.useQuery();
 
   return (
-    <main className="flex min-h-screen flex-col items-center   bg-gradient-to-b from-[#2e026d] to-[#15162c]">
-      <h1 className="mt-12 pl-4 text-4xl">Items for Sale</h1>
-      <div className="container flex items-center justify-center gap-12 px-4 py-16 text-white">
+    <main className=" min-h-screen   bg-gradient-to-b from-[#2e026d] to-[#15162c]">
+      <h1 className="pt-10 text-center pl-4 text-4xl">Items for Sale</h1>
+      <div className="container m-auto grid grid-cols-3 gap-8 pt-10">
         {list.data?.map((item) => (
           <div className="max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
             <Link href={`/item?id=${item.id}`}>

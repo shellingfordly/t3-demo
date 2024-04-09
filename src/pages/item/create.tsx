@@ -10,13 +10,15 @@ type Item = {
 };
 
 export default function Home() {
-  const { register, handleSubmit } = useForm<Item>();
+  const { register, handleSubmit, reset } = useForm<Item>();
   const createItem = api.item.create.useMutation();
 
   const onSubmit: SubmitHandler<Item> = async (data) => {
     data.price = Number(data.price);
-    const res = await createItem.mutateAsync(data);
-    console.log(res)
+    
+    createItem.mutateAsync(data).then(()=>{
+      reset()
+    });
   };
 
 

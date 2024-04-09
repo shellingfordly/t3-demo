@@ -1,8 +1,10 @@
 import { SignInButton, useUser, UserButton } from "@clerk/nextjs";
 import Link from "next/link";
+import { useRouter } from "next/router";
 
 export function NavBar() {
   const user = useUser();
+  const router = useRouter();
 
   return (
     <nav className="border-gray-200 bg-white dark:bg-gray-900">
@@ -44,17 +46,17 @@ export function NavBar() {
             <li>
               <Link
                 href="/"
-                className="rounded hover:text-blue-700"
+                className={`rounded ${ router.pathname === "/"&& 'text-blue-700'} hover:text-blue-700`}
                 aria-current="page"
               >
-                Home
+                Home 
               </Link>
             </li>
             {user.isSignedIn && (
               <li>
                 <Link
                   href="/item/create"
-                  className="rounded hover:text-blue-700"
+                  className={`rounded ${ router.pathname === "/item/create" && 'text-blue-700'} hover:text-blue-700`}
                 >
                   Create Item
                 </Link>
