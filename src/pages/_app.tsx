@@ -2,7 +2,7 @@ import { type AppType } from "next/app";
 import { Inter } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 import { api } from "~/utils/api";
-
+import { NavBar } from "~/components/NavBar";
 import "~/styles/globals.css";
 
 const inter = Inter({
@@ -11,11 +11,12 @@ const inter = Inter({
 });
 const MyApp: AppType = ({ Component, pageProps }) => {
   return (
-    <main className={`font-sans ${inter.variable}`}>
-      <ClerkProvider {...pageProps}>
+    <ClerkProvider {...pageProps}>
+      <main className={`font-sans ${inter.variable} light:text-black dark:text-white`}>
+        <NavBar />
         <Component {...pageProps} />
-      </ClerkProvider>
-    </main>
+      </main>
+    </ClerkProvider>
   );
 };
 

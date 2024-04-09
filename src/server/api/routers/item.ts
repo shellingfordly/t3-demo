@@ -3,9 +3,29 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 import { z } from "zod";
 
-import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
+import {
+  createTRPCRouter,
+  publicProcedure,
+  protectedProcedure,
+} from "~/server/api/trpc";
 
 export const itemRouter = createTRPCRouter({
+  list: publicProcedure.query(({ ctx }) => {
+    return ctx.db.item.findMany();
+  }),
+  get: publicProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      })
+    )
+    .query(({ ctx, input }) => {
+      return ctx.db.item.findUnique({
+        where: {
+          id: input.id,
+        },
+      });
+    }),
   create: protectedProcedure
     .input(
       z.object({
