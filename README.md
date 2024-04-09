@@ -1,5 +1,9 @@
 # Create T3 App
 
+这是一个create-t3-app创建的全栈项目demo，使用了react、nextjs、prisma、tailwindcss、typescript等技术栈。
+
+它是一个模仿[Online Marketplace App](https://github.com/webdevcody/online-marketplace)的学习项目。
+
 ## 初始化
 
 ### 创建
@@ -105,5 +109,86 @@ export default function () {
   const user = useUser();
 
   return !user.isSignedIn ? <SignInButton /> : <UserButton />;
+}
+```
+
+## 数据库
+
+### 定义模型
+
+```prisma
+model Item {
+  id          String   @id @default(cuid())
+  userId      String
+  name        String
+  description String
+  price       Float
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+```
+
+### 创建路由
+
+使用trpc创建前端和后端都可以安全使用的路由，实现了完全类型安全的API。
+
+```ts
+import { z } from "zod";
+import {
+  createTRPCRouter,
+  publicProcedure,
+  protectedProcedure,
+} from "~/server/api/trpc";
+
+export const itemRouter = createTRPCRouter({
+  list: publicProcedure.query(({ ctx }) => {
+    return ctx.db.item.findMany();
+  }),
+  get: publicProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      }),
+    )
+    .query(({ ctx, input }) => {
+      return ctx.db.item.findUnique({
+        where: {
+          id: input.id,
+        },
+      });
+    }),
+  create: protectedProcedure
+    .input(
+      z.object({
+        name: z.string(),
+        description: z.string(),
+        price: z.number(),
+      }),
+    )
+    .mutation(async ({ input, ctx }) => {
+      return await ctx.db.item.create({
+        data: {
+          ...input,
+          userId: ctx.auth.userId,
+        },
+      });
+    }),
+});
+```
+
+### 前端使用API
+
+```ts
+import { api } from "~/utils/api";
+const createItem = api.item.create.useMutation();
+
+type Item = {
+  name: string;
+  description: string;
+  price: number;
+};
+
+function onSubmit(data: Item) {
+  createItem.mutateAsync(data);
 }
 ```
